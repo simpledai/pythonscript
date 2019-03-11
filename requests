@@ -1,0 +1,33 @@
+import json
+import requests
+import time
+
+
+
+class GetZabbixAuth:
+    def __init__(self,server_ip):
+        self.server_ip = server_ip
+
+    def get_auth(self):
+        url = "http://" + server_ip + "/zabbix/api_jsonrpc.php"
+        header = {"Content-Type": "application/json"}
+
+        #把普通格式专换为json格式
+        data = json.dumps(
+        {
+           "jsonrpc": "2.0",
+           "method": "user.login",
+           "params": {
+           "user": "Admin",
+           "password": "YsYhl9t!123"
+        },
+        "id": 1,
+        })
+        resp = requests.post(url,headers=header,data=data)
+        #关于requests库，一个值得一提的特性就是它能以多种方式从请求中返回响应结果的内容。
+        # 从上面的代码来看， resp.text 带给我们的是以Unicode解码的响应文本。但是，如果去访问 resp.content ，
+        # 就会得到原始的二进制数据。另一方面，如果访问 resp.json ，那么就会得到JSON格式的响应内容。
+        json_type = resp.json()  #这是返回了一个dict对象
+        auth = json_type.get('result')
+        self.auth = auth
+        return auth
